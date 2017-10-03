@@ -7,10 +7,11 @@
     <ProjectGuid>{9B33FF69-4F3C-4F93-9216-1D9D8BEEB8D2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>transporter</RootNamespace>
+    <RootNamespace>Transporter</RootNamespace>
     <AssemblyName>transporter</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,9 +41,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Service\Client.cs" />
+    <Compile Include="Service\Message.cs" />
+    <Compile Include="Service\MessageCommands.cs" />
+    <Compile Include="Service\Metadata.cs" />
+    <Compile Include="Service\RConfig.cs" />
     <Compile Include="Transporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
