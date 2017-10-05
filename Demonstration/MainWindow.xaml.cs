@@ -27,17 +27,21 @@ namespace Demonstration
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        Transporter.Transporter sTransporter, dTransporter;
-        byte[] testData;
+        private Transporter.Transporter sTransporter, dTransporter;
+        public ObservableCollection<string> messageLogCollection { get; set; }
+        private byte[] testData;
         
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindow()
         {
-            InitializeComponent();
-
             sTransporter = new Transporter.Transporter(true);
             dTransporter = new Transporter.Transporter(false);
+            messageLogCollection = new ObservableCollection<string>();
+
+            InitializeComponent();
+
+            RootGrid.DataContext = this;
 
             sTransporter.onSClientGetData += sTransporter_onGetData;
             dTransporter.onSClientGetData += dTransporter_onGetData;
@@ -104,12 +108,18 @@ namespace Demonstration
 
         private void sTransporter_onGetData(object data)
         {
-            MessageBox.Show("Get data" + data.ToString(), "Source Client");
+            Dispatcher.Invoke(new Action(() =>
+            {
+                messageLogCollection.Add("Source Client: Get data" + data.ToString());
+            }));
         }
 
         private void dTransporter_onGetData(object data)
         {
-            MessageBox.Show("Get data" + data.ToString(), "Destination Client");
+            Dispatcher.Invoke(new Action(() => 
+            {
+                messageLogCollection.Add("Destination Client: Get data" + data.ToString());
+            }));
         }
 
         private void Transporter_onCancell(object sender, EventArgs e)

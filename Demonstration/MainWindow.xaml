@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Demonstration"
         mc:Ignorable="d"
         Title="Transporter Demo" Height="392" Width="525" Closing="Window_Closing">
-    <Grid Margin="5">
+    <Grid x:Name="RootGrid" Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
@@ -28,5 +28,10 @@
             <Button x:Name="btnSendIsFreeD" Content="Send: IsFree to D" Margin="5" Padding="2" Click="btnSendIsFreeD_Click"></Button>
             <Button x:Name="btnSendTestDataD" Content="Send: TestData to D" Margin="5" Padding="2" Click="btnSendTestDataD_Click"/>
         </StackPanel>
+        <Border Grid.Column="1" Grid.Row="1" BorderThickness="2" BorderBrush="DimGray">
+            <ListBox ItemsSource="{Binding messageLogCollection}">
+                
+            </ListBox>
+        </Border>
     </Grid>
 </Window>
