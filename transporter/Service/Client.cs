@@ -10,12 +10,11 @@ using System.Threading.Tasks;
 
 namespace Transporter.Service
 {
-
+    public delegate void DataEventHandler(object data);
 
     public class Client
     {
-        public delegate void DataHandler(object data);
-        public event DataHandler onGetData = delegate { };
+        public event DataEventHandler onGetData = delegate { };
         public event EventHandler onDataListenerCreated = delegate { };
         public event EventHandler onCancell = delegate { };
 
@@ -88,7 +87,7 @@ namespace Transporter.Service
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             try
             {
-                socket.SendTo(ObjectToByteArray(message), config.messageSEndPoint);
+                socket.SendTo(ObjectToByteArray(message), config.messageDEndPoint);
             }
             catch (Exception ex)
             {
@@ -106,7 +105,7 @@ namespace Transporter.Service
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             try
             {
-                socket.SendTo(data, config.dataSEndPoint);
+                socket.SendTo(data, config.dataDEndPoint);
             }
             catch (Exception ex)
             {
@@ -143,7 +142,7 @@ namespace Transporter.Service
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             try
             {
-                socket.Bind(config.messageMEndPoint);
+                socket.Bind(config.messageSEndPoint);
                 EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
                 while (true)
                 {
@@ -194,7 +193,7 @@ namespace Transporter.Service
             try
             {
                 
-                socket.Bind(config.dataMEndPoint);
+                socket.Bind(config.dataSEndPoint);
                 SendMessage(new Message() { messageCommands = MessageCommands.DataListenerCreated });
 
                 socket.ReceiveTimeout = 60000;// TODO вынести в конфиг

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Demonstration"
         mc:Ignorable="d"
-        Title="Transporter Demo" Height="392" Width="525">
+        Title="Transporter Demo" Height="392" Width="525" Closing="Window_Closing">
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -19,14 +19,14 @@
             <Label Content="Demo" Margin="20,0,0,0" FontSize="24"/>
         </Border>
         <StackPanel Grid.Row="1" Grid.Column="0">
-            <Button x:Name="btnRunMessageListenerM" Content="Run Message listener M" Margin="5" Padding="2" Click="btnRunMessageListenerM_Click"></Button>
             <Button x:Name="btnRunMessageListenerS" Content="Run Message listener S" Margin="5" Padding="2" Click="btnRunMessageListenerS_Click"></Button>
-            <Button x:Name="btnRunDataListenerM" Content="Run DataListener M" Margin="5" Padding="2" Click="btnRunDataListenerM_Click"></Button>
+            <Button x:Name="btnRunMessageListenerD" Content="Run Message listener D" Margin="5" Padding="2" Click="btnRunMessageListenerD_Click"></Button>
             <Button x:Name="btnRunDataListenerS" Content="Run DataListener S" Margin="5" Padding="2" Click="btnRunDataListenerS_Click"></Button>
-            <Button x:Name="btnSendOpenDataListenerS" Content="Send: OpenDataListener to S" Margin="5" Padding="2" Click="btnSendOpenDataListenerS_Click"></Button>
-            <Button x:Name="btnSendDataListenerCreatedS" Content="Send: DataListenerCreated to S" Margin="5" Padding="2" Click="btnSendDataListenerCreatedS_Click"></Button>
-            <Button x:Name="btnSendIsFreeS" Content="Send: IsFree to S" Margin="5" Padding="2" Click="btnSendIsFreeS_Click"></Button>
-            <Button x:Name="btnSendTestDataS_Copy" Content="Send: TestData to S" Margin="5" Padding="2" Click="btnSendTestDataS_Click"/>
+            <Button x:Name="btnRunDataListenerD" Content="Run DataListener D" Margin="5" Padding="2" Click="btnRunDataListenerD_Click"></Button>
+            <Button x:Name="btnSendOpenDataListenerD" Content="Send: OpenDataListener to S" Margin="5" Padding="2" Click="btnSendOpenDataListenerD_Click"></Button>
+            <Button x:Name="btnSendDataListenerCreatedD" Content="Send: DataListenerCreated to S" Margin="5" Padding="2" Click="btnSendDataListenerCreatedD_Click"></Button>
+            <Button x:Name="btnSendIsFreeD" Content="Send: IsFree to D" Margin="5" Padding="2" Click="btnSendIsFreeD_Click"></Button>
+            <Button x:Name="btnSendTestDataD" Content="Send: TestData to D" Margin="5" Padding="2" Click="btnSendTestDataD_Click"/>
         </StackPanel>
     </Grid>
 </Window>

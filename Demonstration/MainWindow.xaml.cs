@@ -27,8 +27,7 @@ namespace Demonstration
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        Transporter.Transporter mTransporter, sTransporter;
-        Metadata testMetadata;
+        Transporter.Transporter sTransporter, dTransporter;
         byte[] testData;
         
         public event PropertyChangedEventHandler PropertyChanged;
@@ -37,13 +36,21 @@ namespace Demonstration
         {
             InitializeComponent();
 
-            mTransporter = new Transporter.Transporter(true);
-            sTransporter = new Transporter.Transporter(false);
+            sTransporter = new Transporter.Transporter(true);
+            dTransporter = new Transporter.Transporter(false);
+
+            sTransporter.onSClientGetData += sTransporter_onGetData;
+            dTransporter.onSClientGetData += dTransporter_onGetData;
+            sTransporter.onDClientCancell += Transporter_onCancell;
+            dTransporter.onDClientCancell += Transporter_onCancell;
         }
 
-        private void btnRunMessageListenerM_Click(object sender, RoutedEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
-            mTransporter.StartService();
+            sTransporter.onSClientGetData -= sTransporter_onGetData;
+            dTransporter.onSClientGetData -= sTransporter_onGetData;
+            sTransporter.onDClientCancell -= Transporter_onCancell;
+            dTransporter.onDClientCancell -= Transporter_onCancell;
         }
 
         private void btnRunMessageListenerS_Click(object sender, RoutedEventArgs e)
@@ -51,9 +58,9 @@ namespace Demonstration
             sTransporter.StartService();
         }
 
-        private void btnRunDataListenerM_Click(object sender, RoutedEventArgs e)
+        private void btnRunMessageListenerD_Click(object sender, RoutedEventArgs e)
         {
-            mTransporter.transporterClient.StartListeningData();
+            dTransporter.StartService();
         }
 
         private void btnRunDataListenerS_Click(object sender, RoutedEventArgs e)
@@ -61,22 +68,27 @@ namespace Demonstration
             sTransporter.transporterClient.StartListeningData();
         }
 
-        private void btnSendOpenDataListenerS_Click(object sender, RoutedEventArgs e)
+        private void btnRunDataListenerD_Click(object sender, RoutedEventArgs e)
         {
-            mTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.OpenDataListener, metadata = new Metadata() });
+            dTransporter.transporterClient.StartListeningData();
         }
 
-        private void btnSendDataListenerCreatedS_Click(object sender, RoutedEventArgs e)
+        private void btnSendOpenDataListenerD_Click(object sender, RoutedEventArgs e)
         {
-            mTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.DataListenerCreated });
+            sTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.OpenDataListener, metadata = new Metadata() });
         }
 
-        private void btnSendIsFreeS_Click(object sender, RoutedEventArgs e)
+        private void btnSendDataListenerCreatedD_Click(object sender, RoutedEventArgs e)
         {
-            mTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.IsFree });
+            sTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.DataListenerCreated });
         }
 
-        private void btnSendTestDataS_Click(object sender, RoutedEventArgs e)
+        private void btnSendIsFreeD_Click(object sender, RoutedEventArgs e)
+        {
+            sTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.IsFree });
+        }
+
+        private void btnSendTestDataD_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog of = new OpenFileDialog();
             if (of.ShowDialog() == true)
@@ -86,16 +98,28 @@ namespace Demonstration
                 testData = new byte[fs.Length];
                 fs.Read(testData, 0, Convert.ToInt32(fs.Length));
                 fs.Close();
-                mTransporter.SendObject(testData);
+                sTransporter.SendObject(testData);
             }
+        }
+
+        private void sTransporter_onGetData(object data)
+        {
+            MessageBox.Show("Get data" + data.ToString(), "Source Client");
+        }
+
+        private void dTransporter_onGetData(object data)
+        {
+            MessageBox.Show("Get data" + data.ToString(), "Destination Client");
+        }
+
+        private void Transporter_onCancell(object sender, EventArgs e)
+        {
+            MessageBox.Show("Client send cancell message\n" + sender.ToString());
         }
 
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

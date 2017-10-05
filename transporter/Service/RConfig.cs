@@ -10,68 +10,68 @@ namespace Transporter.Service
 {
     public class RConfig
     {
-        public int messageMPort { get; set; }
-        public int messageSPort { get; set; }
-        public int dataMPort { get; set; }
-        public int dataSPort { get; set; }
-        public IPAddress MIP { get; set; }
-        public IPAddress SIP { get; set; }
+        public int messageSPort { get; set; }   // Source message port
+        public int messageDPort { get; set; }   // Destination message port
+        public int dataSPort { get; set; }      // Source data port
+        public int dataDPort { get; set; }      // Destination data port
+        public IPAddress SIP { get; set; }      // Source IP
+        public IPAddress DIP { get; set; }      // Destination IP
 
-        public IPEndPoint messageMEndPoint { get; set; }
-        public IPEndPoint messageSEndPoint { get; set; }
-        public IPEndPoint dataMEndPoint { get; set; }
-        public IPEndPoint dataSEndPoint { get; set; }
+        public IPEndPoint messageSEndPoint { get; set; } // Source message end point
+        public IPEndPoint messageDEndPoint { get; set; } // Destination message end point
+        public IPEndPoint dataSEndPoint { get; set; }    // Source data end point
+        public IPEndPoint dataDEndPoint { get; set; }    // Destination data end point
 
-        public RConfig(bool isMaster)
+        public RConfig(bool isSource)
         {
-            MIP = SIP = IPAddress.Loopback;
-            if (isMaster)
+            SIP = DIP = IPAddress.Loopback;
+            if (isSource)
             {
-                messageMPort = 8080;
-                messageSPort = 8081;
-                dataMPort = 8082;
-                dataSPort = 8083;
+                messageSPort = 8080;
+                messageDPort = 8081;
+                dataSPort = 8082;
+                dataDPort = 8083;
             }
             else
             {
-                messageMPort = 8081;
-                messageSPort = 8080;
-                dataMPort = 8083;
-                dataSPort = 8082;
+                messageSPort = 8081;
+                messageDPort = 8080;
+                dataSPort = 8083;
+                dataDPort = 8082;
             }
 
-            messageMEndPoint = new IPEndPoint(MIP, messageMPort);
             messageSEndPoint = new IPEndPoint(SIP, messageSPort);
-            dataMEndPoint = new IPEndPoint(MIP, dataMPort);
+            messageDEndPoint = new IPEndPoint(DIP, messageDPort);
             dataSEndPoint = new IPEndPoint(SIP, dataSPort);
+            dataDEndPoint = new IPEndPoint(DIP, dataDPort);
 
 
         }
 
-        public RConfig(bool isMaster, string slaveIP)
+        public RConfig(bool isSource, string destinationIP)
         {
-            MIP = IPAddress.Loopback;
-            SIP = IPAddress.Parse(slaveIP);
+            SIP = IPAddress.Loopback;
+            DIP = IPAddress.Parse(destinationIP);
 
-            if (isMaster)
+            if (isSource)
             {
-                messageMPort = 8080;
-                messageSPort = 8081;
-                dataMPort = 8082;
-                dataSPort = 8083;
+                messageSPort = 8080;
+                messageDPort = 8081;
+                dataSPort = 8082;
+                dataDPort = 8083;
             }
             else
             {
-                messageMPort = 8081;
-                messageSPort = 8080;
-                dataMPort = 8083;
-                dataSPort = 8082;
+                messageSPort = 8081;
+                messageDPort = 8080;
+                dataSPort = 8083;
+                dataDPort = 8082;
             }
 
-            messageMEndPoint = new IPEndPoint(MIP, messageMPort);
             messageSEndPoint = new IPEndPoint(SIP, messageSPort);
-            dataMEndPoint = new IPEndPoint(MIP, dataMPort);
+            messageDEndPoint = new IPEndPoint(DIP, messageDPort);
             dataSEndPoint = new IPEndPoint(SIP, dataSPort);
+            dataDEndPoint = new IPEndPoint(DIP, dataDPort);
         }
     }
 }

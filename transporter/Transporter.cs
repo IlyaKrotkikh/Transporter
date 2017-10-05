@@ -12,19 +12,30 @@ namespace Transporter
         public Client transporterClient;
         public RConfig transporterConfig;
 
-        private List<byte[]> listDataBlocks;
+        public event DataEventHandler onSClientGetData = delegate { };
+        public event EventHandler onDClientDataListenerCreated = delegate { };
+        public event EventHandler onDClientCancell = delegate { };
 
+        private List<byte[]> listDataBlocks;
 
         public Transporter(bool isMaster)
         {
             transporterConfig = new RConfig(isMaster);
             transporterClient = new Client(transporterConfig);
+
+            transporterClient.onCancell += transporterClient_onCancell;
+            transporterClient.onDataListenerCreated += transporterClient_onDataListenerCreated;
+            transporterClient.onGetData += transporterClient_onGetData;
         }
 
         public Transporter(bool isMaster, string clientIP)
         {
             transporterConfig = new RConfig(isMaster, clientIP);
             transporterClient = new Client(transporterConfig);
+
+            transporterClient.onCancell += transporterClient_onCancell;
+            transporterClient.onDataListenerCreated += transporterClient_onDataListenerCreated;
+            transporterClient.onGetData += transporterClient_onGetData;
         }
 
         public void StartService()
@@ -40,6 +51,7 @@ namespace Transporter
                 byte[] dataMass = transporterClient.ObjectToByteArray(obj);
                 listDataBlocks = DevideByteMass(ref objectMetadata, dataMass);
                 transporterClient.onDataListenerCreated += SendObject_onDataListenerCreated;
+                transporterClient.onDataListenerCreated += transporterClient_onDataListenerCreated;
                 transporterClient.SendMessage(new Message { messageCommands = MessageCommands.OpenDataListener, metadata = objectMetadata });
             }
             catch (Exception ex)
@@ -65,12 +77,26 @@ namespace Transporter
             finally
             {
                 transporterClient.onDataListenerCreated -= SendObject_onDataListenerCreated;
+                transporterClient.onDataListenerCreated -= transporterClient_onDataListenerCreated;
             }
         }
 
-        private void ClientRejection_onCancell(object sender, EventArgs e)
+        // I dont know how it make better.
+        private void transporterClient_onDataListenerCreated(object sender, EventArgs e)
+        {
+            this.onDClientDataListenerCreated(sender, e);
+        }
+
+        private void transporterClient_onCancell(object sender, EventArgs e)
         {
             transporterClient.onDataListenerCreated -= SendObject_onDataListenerCreated;
+            transporterClient.onDataListenerCreated -= transporterClient_onDataListenerCreated;
+            this.onDClientCancell(sender, e);
+        }
+
+        private void transporterClient_onGetData(object data)
+        {
+            this.onSClientGetData(data);
         }
 
         public List<byte[]> DevideByteMass(ref Metadata metadata, byte[] data)
