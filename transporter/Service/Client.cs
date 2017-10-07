@@ -15,13 +15,15 @@ namespace Transporter.Service
     public class Client
     {
         public event DataEventHandler onGetData = delegate { };
+        public event EventHandler<Exception> onClientError = delegate { };
         public event EventHandler onGetDataListenerCreated = delegate { };
         public event EventHandler onMessageListenerCreated = delegate { };
         public event EventHandler onDataListenerCreated = delegate { };
         public event EventHandler onMessageListenerClosed = delegate { };
         public event EventHandler onDataListenerClosed = delegate { };
 
-        public event EventHandler onCancell = delegate { };
+
+        public event EventHandler onCancel = delegate { };
 
         private RConfig config { get; set; }
 
@@ -60,7 +62,7 @@ namespace Transporter.Service
                     status = true;
                     break;
                 case MessageCommands.Cancel:
-                    onCancell(this, null);
+                    onCancel(this, null);
                     status = false;
                     //Some code there
                     break;
@@ -96,6 +98,7 @@ namespace Transporter.Service
             }
             catch (Exception ex)
             {
+                //onClientError(this, ex);
                 Console.WriteLine(ex);
             }
             finally
@@ -228,6 +231,7 @@ namespace Transporter.Service
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                onClientError(this, ex);
             }
             finally
             {

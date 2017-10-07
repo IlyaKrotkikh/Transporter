@@ -18,7 +18,8 @@ namespace Transporter
         public event EventHandler onSClientDataListenerClosed = delegate { };
         public event EventHandler onSClientMessageListenerClosed = delegate { };
         public event EventHandler onDClientDataListenerCreated = delegate { };
-        public event EventHandler onDClientCancell = delegate { };
+        public event EventHandler onDClientCancel = delegate { };
+        public event EventHandler<Exception> onSClientError = delegate { };
 
         private List<byte[]> listDataBlocks;
 
@@ -40,11 +41,13 @@ namespace Transporter
 
         private void SetEvents()
         {
-            transporterClient.onCancell += transporterClient_onCancell;
+            transporterClient.onCancel += transporterClient_onCancel;
             transporterClient.onGetData += transporterClient_onGetData;
+            transporterClient.onClientError += transporterClient_onClientError;
+
             transporterClient.onDataListenerCreated += transporterClient_onDataListenerCreated;
             transporterClient.onDataListenerClosed += transporterClient_onDataListenerClosed;
-            transporterClient.onGetDataListenerCreated += transporterClient_onMessageListenerCreated;
+            transporterClient.onMessageListenerCreated += transporterClient_onMessageListenerCreated;
             transporterClient.onMessageListenerClosed += transporterClient_onMessageListenerClosed;
         }
 
@@ -97,11 +100,11 @@ namespace Transporter
             this.onDClientDataListenerCreated(sender, e);
         }
 
-        private void transporterClient_onCancell(object sender, EventArgs e)
+        private void transporterClient_onCancel(object sender, EventArgs e)
         {
             transporterClient.onGetDataListenerCreated -= SendObject_onDataListenerCreated;
             transporterClient.onGetDataListenerCreated -= transporterClient_onGetDataListenerCreated;
-            this.onDClientCancell(sender, e);
+            this.onDClientCancel(sender, e);
         }
 
         private void transporterClient_onGetData(object data)
@@ -127,6 +130,11 @@ namespace Transporter
         private void transporterClient_onDataListenerClosed(object sender, EventArgs e)
         {
             this.onSClientDataListenerClosed(sender, e);
+        }
+
+        private void transporterClient_onClientError(object sender, Exception e)
+        {
+            this.onSClientError(sender, e);
         }
 
         public List<byte[]> DevideByteMass(ref Metadata metadata, byte[] data)
