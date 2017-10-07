@@ -24,7 +24,7 @@ namespace Transporter
             transporterClient = new Client(transporterConfig);
 
             transporterClient.onCancell += transporterClient_onCancell;
-            transporterClient.onDataListenerCreated += transporterClient_onDataListenerCreated;
+            transporterClient.onGetDataListenerCreated += transporterClient_onDataListenerCreated;
             transporterClient.onGetData += transporterClient_onGetData;
         }
 
@@ -34,7 +34,7 @@ namespace Transporter
             transporterClient = new Client(transporterConfig);
 
             transporterClient.onCancell += transporterClient_onCancell;
-            transporterClient.onDataListenerCreated += transporterClient_onDataListenerCreated;
+            transporterClient.onGetDataListenerCreated += transporterClient_onDataListenerCreated;
             transporterClient.onGetData += transporterClient_onGetData;
         }
 
@@ -50,8 +50,8 @@ namespace Transporter
             {
                 byte[] dataMass = transporterClient.ObjectToByteArray(obj);
                 listDataBlocks = DevideByteMass(ref objectMetadata, dataMass);
-                transporterClient.onDataListenerCreated += SendObject_onDataListenerCreated;
-                transporterClient.onDataListenerCreated += transporterClient_onDataListenerCreated;
+                transporterClient.onGetDataListenerCreated += SendObject_onDataListenerCreated;
+                transporterClient.onGetDataListenerCreated += transporterClient_onDataListenerCreated;
                 transporterClient.SendMessage(new Message { messageCommands = MessageCommands.OpenDataListener, metadata = objectMetadata });
             }
             catch (Exception ex)
@@ -76,8 +76,8 @@ namespace Transporter
             }
             finally
             {
-                transporterClient.onDataListenerCreated -= SendObject_onDataListenerCreated;
-                transporterClient.onDataListenerCreated -= transporterClient_onDataListenerCreated;
+                transporterClient.onGetDataListenerCreated -= SendObject_onDataListenerCreated;
+                transporterClient.onGetDataListenerCreated -= transporterClient_onDataListenerCreated;
             }
         }
 
@@ -89,8 +89,8 @@ namespace Transporter
 
         private void transporterClient_onCancell(object sender, EventArgs e)
         {
-            transporterClient.onDataListenerCreated -= SendObject_onDataListenerCreated;
-            transporterClient.onDataListenerCreated -= transporterClient_onDataListenerCreated;
+            transporterClient.onGetDataListenerCreated -= SendObject_onDataListenerCreated;
+            transporterClient.onGetDataListenerCreated -= transporterClient_onDataListenerCreated;
             this.onDClientCancell(sender, e);
         }
 

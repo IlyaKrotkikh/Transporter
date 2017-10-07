@@ -15,7 +15,12 @@ namespace Transporter.Service
     public class Client
     {
         public event DataEventHandler onGetData = delegate { };
+        public event EventHandler onGetDataListenerCreated = delegate { };
+        public event EventHandler onMessageListenerCreated = delegate { };
         public event EventHandler onDataListenerCreated = delegate { };
+        public event EventHandler onMessageListenerClosed = delegate { };
+        public event EventHandler onDataListenerClosed = delegate { };
+
         public event EventHandler onCancell = delegate { };
 
         private RConfig config { get; set; }
@@ -44,7 +49,7 @@ namespace Transporter.Service
                     break;
                 case MessageCommands.DataListenerCreated:
                     //Порт прослушивается, уведомляем подписчиков, что можно отправлять данные.
-                    onDataListenerCreated(this, null);
+                    onGetDataListenerCreated(this, null);
                     status = true;
                     break;
                 case MessageCommands.IsFree:
@@ -143,6 +148,8 @@ namespace Transporter.Service
             try
             {
                 socket.Bind(config.messageSEndPoint);
+                onMessageListenerCreated(this, null);
+
                 EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
                 while (true)
                 {
@@ -171,6 +178,7 @@ namespace Transporter.Service
             {
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
+                onMessageListenerClosed(this, null);
             }
         }
 
@@ -195,6 +203,7 @@ namespace Transporter.Service
                 
                 socket.Bind(config.dataSEndPoint);
                 SendMessage(new Message() { messageCommands = MessageCommands.DataListenerCreated });
+                onDataListenerCreated(this,null);
 
                 socket.ReceiveTimeout = 60000;// TODO вынести в конфиг
 
@@ -225,6 +234,7 @@ namespace Transporter.Service
                 socket.Shutdown(SocketShutdown.Both); // разорвать соединение!
                 socket.Close();
                 isFree = true; // снять блокировку! isFree = true;
+                onDataListenerClosed(this, null);
             }
         }
 
