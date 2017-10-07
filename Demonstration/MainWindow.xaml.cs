@@ -43,18 +43,38 @@ namespace Demonstration
 
             RootGrid.DataContext = this;
 
-            sTransporter.onSClientGetData += sTransporter_onGetData;
+            dTransporter.onDClientCancel += Transporter_onCancel;
+            dTransporter.onSClientDataListenerCreated += Transporter_onSClientDataListenerCreated;
+            dTransporter.onSClientDataListenerClosed += Transporter_onSClientDataListenerClosed;
+            dTransporter.onSClientError += Transporter_onSClientError;
             dTransporter.onSClientGetData += dTransporter_onGetData;
-            sTransporter.onDClientCancell += Transporter_onCancell;
-            dTransporter.onDClientCancell += Transporter_onCancell;
+            dTransporter.onSClientMessageListenerClosed += Transporter_onSClientMessageListenerClosed;
+            dTransporter.onSClientMessageListenerCreated += Transporter_onSClientMessageListenerCreated;
+            sTransporter.onDClientCancel += Transporter_onCancel;
+            sTransporter.onSClientDataListenerCreated += Transporter_onSClientDataListenerCreated;
+            sTransporter.onSClientDataListenerClosed += Transporter_onSClientDataListenerClosed;
+            sTransporter.onSClientError += Transporter_onSClientError;
+            sTransporter.onSClientGetData += sTransporter_onGetData;
+            sTransporter.onSClientMessageListenerClosed += Transporter_onSClientMessageListenerClosed;
+            sTransporter.onSClientMessageListenerCreated += Transporter_onSClientMessageListenerCreated;
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            dTransporter.onDClientCancel -= Transporter_onCancel;
+            dTransporter.onSClientDataListenerCreated -= Transporter_onSClientDataListenerCreated;
+            dTransporter.onSClientDataListenerClosed -= Transporter_onSClientDataListenerClosed;
+            dTransporter.onSClientError -= Transporter_onSClientError;
+            dTransporter.onSClientGetData -= dTransporter_onGetData;
+            dTransporter.onSClientMessageListenerClosed -= Transporter_onSClientMessageListenerClosed;
+            dTransporter.onSClientMessageListenerCreated -= Transporter_onSClientMessageListenerCreated;
+            sTransporter.onDClientCancel -= Transporter_onCancel;
+            sTransporter.onSClientDataListenerCreated -= Transporter_onSClientDataListenerCreated;
+            sTransporter.onSClientDataListenerClosed -= Transporter_onSClientDataListenerClosed;
+            sTransporter.onSClientError -= Transporter_onSClientError;
             sTransporter.onSClientGetData -= sTransporter_onGetData;
-            dTransporter.onSClientGetData -= sTransporter_onGetData;
-            sTransporter.onDClientCancell -= Transporter_onCancell;
-            dTransporter.onDClientCancell -= Transporter_onCancell;
+            sTransporter.onSClientMessageListenerClosed -= Transporter_onSClientMessageListenerClosed;
+            sTransporter.onSClientMessageListenerCreated -= Transporter_onSClientMessageListenerCreated;
         }
 
         private void btnRunMessageListenerS_Click(object sender, RoutedEventArgs e)
@@ -134,11 +154,51 @@ namespace Demonstration
             dTransporter.SendObject(data);
         }
 
-        private void Transporter_onCancell(object sender, EventArgs e)
+        private void Transporter_onCancel(object sender, EventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                messageLogCollection.Add(sender.ToString() + ": Client send cancell message");
+                messageLogCollection.Add(sender.ToString() + ": Client send cancel message");
+            }));
+        }
+
+        private void Transporter_onSClientDataListenerCreated(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                messageLogCollection.Add(sender.ToString() + ": Data listener was created");
+            }));
+        }
+
+        private void Transporter_onSClientMessageListenerCreated(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                messageLogCollection.Add(sender.ToString() + ": Message listener was created");
+            }));
+        }
+
+        private void Transporter_onSClientDataListenerClosed(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                messageLogCollection.Add(sender.ToString() + ": Data listener was closed");
+            }));
+        }
+
+        private void Transporter_onSClientMessageListenerClosed(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                messageLogCollection.Add(sender.ToString() + ": Message listener was closed");
+            }));
+        }
+
+        private void Transporter_onSClientError(object sender, Exception e)
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                messageLogCollection.Add(sender.ToString() + e.Message);
             }));
         }
 
