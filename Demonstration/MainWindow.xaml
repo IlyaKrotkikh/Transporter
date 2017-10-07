@@ -26,7 +26,7 @@
             <Button x:Name="btnSendOpenDataListenerD" Content="Send: OpenDataListener to S" Margin="5" Padding="2" Click="btnSendOpenDataListenerD_Click"></Button>
             <Button x:Name="btnSendDataListenerCreatedD" Content="Send: DataListenerCreated to S" Margin="5" Padding="2" Click="btnSendDataListenerCreatedD_Click"></Button>
             <Button x:Name="btnSendIsFreeD" Content="Send: IsFree to D" Margin="5" Padding="2" Click="btnSendIsFreeD_Click"></Button>
-            <Button x:Name="btnSendTestDataD" Content="Send: TestData to D" Margin="5" Padding="2" Click="btnSendTestDataD_Click"/>
+            <Button x:Name="btnSendTestDataD" Content="Send: TestFileData to D" Margin="5" Padding="2" Click="btnSendTestDataD_Click"/>
         </StackPanel>
         <Border Grid.Column="1" Grid.Row="1" BorderThickness="2" BorderBrush="DimGray">
             <ListBox ItemsSource="{Binding messageLogCollection}">

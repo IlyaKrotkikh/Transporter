@@ -111,6 +111,17 @@ namespace Demonstration
             Dispatcher.Invoke(new Action(() =>
             {
                 messageLogCollection.Add("Source Client: Get data" + data.ToString());
+                byte[] bmassFile = data as byte[];
+                if (bmassFile != null)
+                {
+                    SaveFileDialog sf = new SaveFileDialog();
+                    if (sf.ShowDialog() == true)
+                    {
+                        Stream fs = sf.OpenFile();
+                        fs.Write(bmassFile, 0, bmassFile.Length);
+                        fs.Close();
+                    }
+                }
             }));
         }
 
@@ -120,11 +131,15 @@ namespace Demonstration
             {
                 messageLogCollection.Add("Destination Client: Get data" + data.ToString());
             }));
+            dTransporter.SendObject(data);
         }
 
         private void Transporter_onCancell(object sender, EventArgs e)
         {
-            MessageBox.Show("Client send cancell message\n" + sender.ToString());
+            Dispatcher.Invoke(new Action(() =>
+            {
+                messageLogCollection.Add(sender.ToString() + ": Client send cancell message");
+            }));
         }
 
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
