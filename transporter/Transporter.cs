@@ -56,6 +56,11 @@ namespace Transporter
             transporterClient.StartListeningMesages();
         }
 
+        public void StopService()
+        {
+            transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.CloseMessageListener }, transporterConfig.messageSEndPoint);
+        }
+
         public void SendObject(object obj)
         {
             Metadata objectMetadata = new Metadata();
