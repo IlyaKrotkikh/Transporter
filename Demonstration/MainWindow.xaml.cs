@@ -87,24 +87,9 @@ namespace Demonstration
             dTransporter.StartService();
         }
 
-        private void btnRunDataListenerS_Click(object sender, RoutedEventArgs e)
-        {
-            sTransporter.transporterClient.StartListeningData();
-        }
-
-        private void btnRunDataListenerD_Click(object sender, RoutedEventArgs e)
-        {
-            dTransporter.transporterClient.StartListeningData();
-        }
-
         private void btnSendOpenDataListenerD_Click(object sender, RoutedEventArgs e)
         {
             sTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.OpenDataListener, metadata = new Metadata() });
-        }
-
-        private void btnSendDataListenerCreatedD_Click(object sender, RoutedEventArgs e)
-        {
-            sTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.DataListenerCreated });
         }
 
         private void btnSendIsFreeD_Click(object sender, RoutedEventArgs e)
