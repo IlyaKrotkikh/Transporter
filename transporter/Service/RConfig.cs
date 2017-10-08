@@ -48,7 +48,7 @@ namespace Transporter.Service
 
         }
 
-        public RConfig(bool isSource, string destinationIP)
+        public RConfig(bool isSource,string sourceIP , string destinationIP)
         {
             int messageSPort;   // Source message port
             int messageDPort;   // Destination message port
@@ -57,7 +57,7 @@ namespace Transporter.Service
             IPAddress SIP;      // Source IP
             IPAddress DIP;      // Destination IP
 
-            SIP = IPAddress.Loopback;
+            SIP = IPAddress.Parse(sourceIP);
             DIP = IPAddress.Parse(destinationIP);
 
             if (isSource)

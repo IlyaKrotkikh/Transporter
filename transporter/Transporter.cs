@@ -31,9 +31,9 @@ namespace Transporter
             SetEvents();
         }
 
-        public Transporter(bool isMaster, string destinationClientIP)
+        public Transporter(bool isMaster, string sourceClientIP, string destinationClientIP)
         {
-            transporterConfig = new RConfig(isMaster, destinationClientIP);
+            transporterConfig = new RConfig(isMaster,sourceClientIP, destinationClientIP);
             transporterClient = new Client(transporterConfig);
 
             SetEvents();
