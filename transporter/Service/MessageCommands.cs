@@ -9,6 +9,7 @@ namespace Transporter.Service
     public enum MessageCommands
     {
         OpenDataListener,
+        CloseMessageListener,
         DataListenerCreated,
         IsFree,
         OK,

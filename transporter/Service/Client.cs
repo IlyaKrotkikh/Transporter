@@ -31,13 +31,15 @@ namespace Transporter.Service
         private Task DataListener { get; set; }
 
         private Metadata tempMetadata { get; set; }
-        private bool isFree;
+        private bool isDataListenerFree;
+        private bool isMessageListenerFree;
+        private bool messageListenerRunStatus;
 
         public Client(RConfig config)
         {
             this.config = config;
             MessageListener = new Task(ListenMesage);
-            isFree = true;
+            isDataListenerFree = true;
         }
 
         private bool MessageHandler(Message message)
@@ -48,6 +50,9 @@ namespace Transporter.Service
                 case MessageCommands.OpenDataListener:
                     PrepareDataListener(message.metadata);
                     status = true;
+                    break;
+                case MessageCommands.CloseMessageListener:
+                    StopListeningMesages();
                     break;
                 case MessageCommands.DataListenerCreated:
                     //Порт прослушивается, уведомляем подписчиков, что можно отправлять данные.
@@ -76,9 +81,9 @@ namespace Transporter.Service
 
         private void PrepareDataListener(Metadata metadata)
         {
-            if (isFree)
+            if (isDataListenerFree)
             {
-                isFree = false;
+                isDataListenerFree = false;
                 tempMetadata = metadata;
                 StartListeningData();
             }
@@ -89,16 +94,16 @@ namespace Transporter.Service
             }
         }
 
-        public void SendMessage(Message message)
+        public void SendMessage(Message message, IPEndPoint ipEndPoint)
         {
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             try
             {
-                socket.SendTo(ObjectToByteArray(message), config.messageDEndPoint);
+                socket.SendTo(ObjectToByteArray(message), ipEndPoint);
             }
             catch (Exception ex)
             {
-                //onClientError(this, ex);
+                onClientError(this, ex);
                 Console.WriteLine(ex);
             }
             finally
@@ -106,6 +111,11 @@ namespace Transporter.Service
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
             }
+        }
+
+        public void SendMessage(Message message)
+        {
+            this.SendMessage(message, config.messageDEndPoint);
         }
 
         public void SendData(byte[] data)
@@ -118,6 +128,7 @@ namespace Transporter.Service
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                onClientError(this, ex);
             }
             finally
             {
@@ -137,12 +148,19 @@ namespace Transporter.Service
         {
             try
             {
+                messageListenerRunStatus = true;
                 MessageListener.Start();
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex);
+                onClientError(this, ex);
             }
+        }
+
+        private void StopListeningMesages()
+        {
+            messageListenerRunStatus = false;
         }
 
         private void ListenMesage()
@@ -154,7 +172,7 @@ namespace Transporter.Service
                 onMessageListenerCreated(this, null);
 
                 EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
-                while (true)
+                while (messageListenerRunStatus)
                 {
                     int bytes = 0; // количество полученных байтов
                     byte[] data = new byte[508]; // буфер для получаемых данных = мин. длинна ipv4 пакета
@@ -176,6 +194,7 @@ namespace Transporter.Service
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                onClientError(this, ex);
             }
             finally
             {
@@ -215,11 +234,8 @@ namespace Transporter.Service
                     int bytesCount = 0; // количество полученных байтов
                     byte[] buffer = new byte[tempMetadata.bLength]; // буфер для получаемых данных
 
-                    //if (socket.Available > 0)
-                    //{
-                        bytesCount = socket.ReceiveFrom(buffer, ref remoteIp);
-                        memoryStream.Write(buffer,0, bytesCount);
-                    //}
+                    bytesCount = socket.ReceiveFrom(buffer, ref remoteIp);
+                    memoryStream.Write(buffer, 0, bytesCount);
                 }
 
                 memoryStream.Seek(0, SeekOrigin.Begin);
@@ -237,7 +253,7 @@ namespace Transporter.Service
             {
                 socket.Shutdown(SocketShutdown.Both); // разорвать соединение!
                 socket.Close();
-                isFree = true; // снять блокировку! isFree = true;
+                isDataListenerFree = true; // снять блокировку! isFree = true;
                 onDataListenerClosed(this, null);
             }
         }
