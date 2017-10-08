@@ -21,6 +21,8 @@
         <StackPanel Grid.Row="1" Grid.Column="0">
             <Button x:Name="btnRunMessageListenerS" Content="Run Message listener S" Margin="5" Padding="2" Click="btnRunMessageListenerS_Click"></Button>
             <Button x:Name="btnRunMessageListenerD" Content="Run Message listener D" Margin="5" Padding="2" Click="btnRunMessageListenerD_Click"></Button>
+            <Button x:Name="btnStopMessageListenerS" Content="Stop Message listener S" Margin="5" Padding="2" Click="btnStopMessageListenerS_Click"/>
+            <Button x:Name="btnStopMessageListenerD" Content="Stop Message listener D" Margin="5" Padding="2" Click="btnStopMessageListenerD_Click"/>
             <Button x:Name="btnSendOpenDataListenerD" Content="Send: OpenDataListener to S" Margin="5" Padding="2" Click="btnSendOpenDataListenerD_Click"></Button>
             <Button x:Name="btnSendIsFreeD" Content="Send: IsFree to D" Margin="5" Padding="2" Click="btnSendIsFreeD_Click"></Button>
             <Button x:Name="btnSendTestDataD" Content="Send: TestFileData to D" Margin="5" Padding="2" Click="btnSendTestDataD_Click"/>

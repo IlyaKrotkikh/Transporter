@@ -87,6 +87,16 @@ namespace Demonstration
             dTransporter.StartService();
         }
 
+        private void btnStopMessageListenerS_Click(object sender, RoutedEventArgs e)
+        {
+            sTransporter.StopService();
+        }
+
+        private void btnStopMessageListenerD_Click(object sender, RoutedEventArgs e)
+        {
+            dTransporter.StopService();
+        }
+
         private void btnSendOpenDataListenerD_Click(object sender, RoutedEventArgs e)
         {
             sTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.OpenDataListener, metadata = new Metadata() });
