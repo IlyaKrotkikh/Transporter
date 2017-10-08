@@ -38,8 +38,8 @@ namespace Transporter.Service
         public Client(RConfig config)
         {
             this.config = config;
-            MessageListener = new Task(ListenMesage);
             isDataListenerFree = true;
+            isMessageListenerFree = true;
         }
 
         private bool MessageHandler(Message message)
@@ -148,8 +148,13 @@ namespace Transporter.Service
         {
             try
             {
-                messageListenerRunStatus = true;
-                MessageListener.Start();
+                if (isMessageListenerFree)
+                {
+                    messageListenerRunStatus = true;
+                    isMessageListenerFree = false;
+                    MessageListener = new Task(ListenMesage);
+                    MessageListener.Start();
+                }
             }
             catch(Exception ex)
             {
@@ -200,6 +205,7 @@ namespace Transporter.Service
             {
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
+                isMessageListenerFree = true;
                 onMessageListenerClosed(this, null);
             }
         }
