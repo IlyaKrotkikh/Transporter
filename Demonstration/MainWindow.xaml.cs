@@ -19,6 +19,7 @@ using Transporter.Service;
 using Transporter;
 using Microsoft.Win32;
 using System.IO;
+using System.Net;
 
 namespace Demonstration
 {
@@ -57,6 +58,8 @@ namespace Demonstration
             sTransporter.onSClientGetData += sTransporter_onGetData;
             sTransporter.onSClientMessageListenerClosed += Transporter_onSClientMessageListenerClosed;
             sTransporter.onSClientMessageListenerCreated += Transporter_onSClientMessageListenerCreated;
+
+            txtDestinationIP.Text = dTransporter.transporterConfig.dataDEndPoint.Address.ToString();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -195,6 +198,24 @@ namespace Demonstration
             {
                 messageLogCollection.Add(sender.ToString() + e.Message);
             }));
+        }
+
+        private void btnSetDIP_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string ip = txtDestinationIP.Text;
+                IPAddress ipAddress = IPAddress.Parse(ip);
+                sTransporter.transporterConfig.dataDEndPoint.Address = ipAddress;
+                sTransporter.transporterConfig.messageDEndPoint.Address = ipAddress;
+
+                dTransporter.transporterConfig.dataDEndPoint.Address = ipAddress;
+                dTransporter.transporterConfig.messageDEndPoint.Address = ipAddress;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Wrong ip address! \n" + ex.Message);
+            }
         }
 
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")

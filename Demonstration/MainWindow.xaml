@@ -9,6 +9,7 @@
     <Grid x:Name="RootGrid" Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -18,7 +19,11 @@
         <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,5" BorderThickness="0,0,0,2" BorderBrush="DimGray">
             <Label Content="Demo" Margin="20,0,0,0" FontSize="24"/>
         </Border>
-        <StackPanel Grid.Row="1" Grid.Column="0">
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+            <TextBox x:Name="txtDestinationIP" Width="120" Margin="5,5,0,5" Padding="2"/>
+            <Button x:Name="btnSetDIP" Content="Set destination IP" Width="100" Margin="5,5,0,5" Padding="2" Click="btnSetDIP_Click"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Grid.Column="0">
             <Button x:Name="btnRunMessageListenerS" Content="Run Message listener S" Margin="5" Padding="2" Click="btnRunMessageListenerS_Click"></Button>
             <Button x:Name="btnRunMessageListenerD" Content="Run Message listener D" Margin="5" Padding="2" Click="btnRunMessageListenerD_Click"></Button>
             <Button x:Name="btnStopMessageListenerS" Content="Stop Message listener S" Margin="5" Padding="2" Click="btnStopMessageListenerS_Click"/>
@@ -27,10 +32,8 @@
             <Button x:Name="btnSendIsFreeD" Content="Send: IsFree to D" Margin="5" Padding="2" Click="btnSendIsFreeD_Click"></Button>
             <Button x:Name="btnSendTestDataD" Content="Send: TestFileData to D" Margin="5" Padding="2" Click="btnSendTestDataD_Click"/>
         </StackPanel>
-        <Border Grid.Column="1" Grid.Row="1" BorderThickness="2" BorderBrush="DimGray">
-            <ListBox ItemsSource="{Binding messageLogCollection}">
-                
-            </ListBox>
+        <Border Grid.Row="2" Grid.Column="1" BorderThickness="2" BorderBrush="DimGray">
+            <ListBox ItemsSource="{Binding messageLogCollection}"/>
         </Border>
     </Grid>
 </Window>

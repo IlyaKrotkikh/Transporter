@@ -10,13 +10,6 @@ namespace Transporter.Service
 {
     public class RConfig
     {
-        public int messageSPort { get; set; }   // Source message port
-        public int messageDPort { get; set; }   // Destination message port
-        public int dataSPort { get; set; }      // Source data port
-        public int dataDPort { get; set; }      // Destination data port
-        public IPAddress SIP { get; set; }      // Source IP
-        public IPAddress DIP { get; set; }      // Destination IP
-
         public IPEndPoint messageSEndPoint { get; set; } // Source message end point
         public IPEndPoint messageDEndPoint { get; set; } // Destination message end point
         public IPEndPoint dataSEndPoint { get; set; }    // Source data end point
@@ -24,6 +17,13 @@ namespace Transporter.Service
 
         public RConfig(bool isSource)
         {
+            int messageSPort;   // Source message port
+            int messageDPort;   // Destination message port
+            int dataSPort;      // Source data port
+            int dataDPort;      // Destination data port
+            IPAddress SIP;      // Source IP
+            IPAddress DIP;      // Destination IP
+
             SIP = DIP = IPAddress.Loopback;
             if (isSource)
             {
@@ -50,6 +50,13 @@ namespace Transporter.Service
 
         public RConfig(bool isSource, string destinationIP)
         {
+            int messageSPort;   // Source message port
+            int messageDPort;   // Destination message port
+            int dataSPort;      // Source data port
+            int dataDPort;      // Destination data port
+            IPAddress SIP;      // Source IP
+            IPAddress DIP;      // Destination IP
+
             SIP = IPAddress.Loopback;
             DIP = IPAddress.Parse(destinationIP);
 
