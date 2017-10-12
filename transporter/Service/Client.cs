@@ -25,7 +25,7 @@ namespace Transporter.Service
 
         public event EventHandler onCancel = delegate { };
 
-        private RConfig config { get; set; }
+        public RConfig config { get; set; }
 
         private Task MessageListener { get; set; }
         private Task DataListener { get; set; }
