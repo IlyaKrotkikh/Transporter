@@ -20,6 +20,7 @@ using Transporter;
 using Microsoft.Win32;
 using System.IO;
 using System.Net;
+using System.Globalization;
 
 namespace Demonstration
 {
@@ -28,86 +29,61 @@ namespace Demonstration
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private Transporter.Transporter sTransporter, dTransporter;
+        private Transporter.Transporter demoTransporter;
         public ObservableCollection<string> messageLogCollection { get; set; }
+        public ObservableCollection<IPAddress> sourceIPListCollection { get; set; }
         private byte[] testData;
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindow()
         {
-            sTransporter = new Transporter.Transporter(true);
-            dTransporter = new Transporter.Transporter(false);
+            demoTransporter = new Transporter.Transporter(true);
             messageLogCollection = new ObservableCollection<string>();
-
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            sourceIPListCollection = new ObservableCollection<IPAddress>(host.AddressList);
             InitializeComponent();
 
             RootGrid.DataContext = this;
 
-            dTransporter.onDClientCancel += Transporter_onCancel;
-            dTransporter.onSClientDataListenerCreated += Transporter_onSClientDataListenerCreated;
-            dTransporter.onSClientDataListenerClosed += Transporter_onSClientDataListenerClosed;
-            dTransporter.onSClientError += Transporter_onSClientError;
-            dTransporter.onSClientGetData += dTransporter_onGetData;
-            dTransporter.onSClientMessageListenerClosed += Transporter_onSClientMessageListenerClosed;
-            dTransporter.onSClientMessageListenerCreated += Transporter_onSClientMessageListenerCreated;
-            sTransporter.onDClientCancel += Transporter_onCancel;
-            sTransporter.onSClientDataListenerCreated += Transporter_onSClientDataListenerCreated;
-            sTransporter.onSClientDataListenerClosed += Transporter_onSClientDataListenerClosed;
-            sTransporter.onSClientError += Transporter_onSClientError;
-            sTransporter.onSClientGetData += sTransporter_onGetData;
-            sTransporter.onSClientMessageListenerClosed += Transporter_onSClientMessageListenerClosed;
-            sTransporter.onSClientMessageListenerCreated += Transporter_onSClientMessageListenerCreated;
-
-            txtDestinationIP.Text = dTransporter.transporterConfig.dataDEndPoint.Address.ToString();
+            demoTransporter.onDClientCancel += Transporter_onCancel;
+            demoTransporter.onSClientDataListenerCreated += Transporter_onSClientDataListenerCreated;
+            demoTransporter.onSClientDataListenerClosed += Transporter_onSClientDataListenerClosed;
+            demoTransporter.onSClientError += Transporter_onSClientError;
+            demoTransporter.onSClientGetData += sTransporter_onGetData;
+            demoTransporter.onSClientMessageListenerClosed += Transporter_onSClientMessageListenerClosed;
+            demoTransporter.onSClientMessageListenerCreated += Transporter_onSClientMessageListenerCreated;
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            dTransporter.onDClientCancel -= Transporter_onCancel;
-            dTransporter.onSClientDataListenerCreated -= Transporter_onSClientDataListenerCreated;
-            dTransporter.onSClientDataListenerClosed -= Transporter_onSClientDataListenerClosed;
-            dTransporter.onSClientError -= Transporter_onSClientError;
-            dTransporter.onSClientGetData -= dTransporter_onGetData;
-            dTransporter.onSClientMessageListenerClosed -= Transporter_onSClientMessageListenerClosed;
-            dTransporter.onSClientMessageListenerCreated -= Transporter_onSClientMessageListenerCreated;
-            sTransporter.onDClientCancel -= Transporter_onCancel;
-            sTransporter.onSClientDataListenerCreated -= Transporter_onSClientDataListenerCreated;
-            sTransporter.onSClientDataListenerClosed -= Transporter_onSClientDataListenerClosed;
-            sTransporter.onSClientError -= Transporter_onSClientError;
-            sTransporter.onSClientGetData -= sTransporter_onGetData;
-            sTransporter.onSClientMessageListenerClosed -= Transporter_onSClientMessageListenerClosed;
-            sTransporter.onSClientMessageListenerCreated -= Transporter_onSClientMessageListenerCreated;
+            demoTransporter.onDClientCancel -= Transporter_onCancel;
+            demoTransporter.onSClientDataListenerCreated -= Transporter_onSClientDataListenerCreated;
+            demoTransporter.onSClientDataListenerClosed -= Transporter_onSClientDataListenerClosed;
+            demoTransporter.onSClientError -= Transporter_onSClientError;
+            demoTransporter.onSClientGetData -= sTransporter_onGetData;
+            demoTransporter.onSClientMessageListenerClosed -= Transporter_onSClientMessageListenerClosed;
+            demoTransporter.onSClientMessageListenerCreated -= Transporter_onSClientMessageListenerCreated;
         }
 
         private void btnRunMessageListenerS_Click(object sender, RoutedEventArgs e)
         {
-            sTransporter.StartService();
-        }
-
-        private void btnRunMessageListenerD_Click(object sender, RoutedEventArgs e)
-        {
-            dTransporter.StartService();
+            demoTransporter.StartService();
         }
 
         private void btnStopMessageListenerS_Click(object sender, RoutedEventArgs e)
         {
-            sTransporter.StopService();
-        }
-
-        private void btnStopMessageListenerD_Click(object sender, RoutedEventArgs e)
-        {
-            dTransporter.StopService();
+            demoTransporter.StopService();
         }
 
         private void btnSendOpenDataListenerD_Click(object sender, RoutedEventArgs e)
         {
-            sTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.OpenDataListener, metadata = new Metadata() });
+            demoTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.OpenDataListener, metadata = new Metadata() });
         }
 
         private void btnSendIsFreeD_Click(object sender, RoutedEventArgs e)
         {
-            sTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.IsFree });
+            demoTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.IsFree });
         }
 
         private void btnSendTestDataD_Click(object sender, RoutedEventArgs e)
@@ -120,7 +96,7 @@ namespace Demonstration
                 testData = new byte[fs.Length];
                 fs.Read(testData, 0, Convert.ToInt32(fs.Length));
                 fs.Close();
-                sTransporter.SendObject(testData);
+                demoTransporter.SendObject(testData);
             }
         }
 
@@ -145,11 +121,11 @@ namespace Demonstration
 
         private void dTransporter_onGetData(object data)
         {
-            Dispatcher.Invoke(new Action(() => 
+            Dispatcher.Invoke(new Action(() =>
             {
                 messageLogCollection.Add("Destination Client: Get data" + data.ToString());
             }));
-            dTransporter.SendObject(data);
+            demoTransporter.SendObject(data);
         }
 
         private void Transporter_onCancel(object sender, EventArgs e)
@@ -200,17 +176,61 @@ namespace Demonstration
             }));
         }
 
-        private void btnSetDIP_Click(object sender, RoutedEventArgs e)
+        private void btnSetRconfig(object sender, RoutedEventArgs e)
         {
             try
             {
-                string ip = txtDestinationIP.Text;
-                IPAddress ipAddress = IPAddress.Parse(ip);
-                sTransporter.transporterConfig.dataDEndPoint.Address = ipAddress;
-                sTransporter.transporterConfig.messageDEndPoint.Address = ipAddress;
+                RConfig newConfig;
+                demoTransporter.onSClientGetData -= dTransporter_onGetData;
+                demoTransporter.onSClientGetData -= sTransporter_onGetData;
 
-                dTransporter.transporterConfig.dataDEndPoint.Address = ipAddress;
-                dTransporter.transporterConfig.messageDEndPoint.Address = ipAddress;
+                if (chkIsLocalSet.IsChecked == true)
+                {
+                    if (rbIsSource.IsChecked == true)
+                    {
+                        demoTransporter.onSClientGetData += sTransporter_onGetData;
+                        messageLogCollection.Add("Client set as Source");
+                        newConfig = new RConfig(true);
+                    }
+                    else
+                    {
+                        demoTransporter.onSClientGetData += dTransporter_onGetData;
+                        messageLogCollection.Add("Client set as Destination");
+                        newConfig = new RConfig(false);
+                    }
+                }
+                else
+                {
+                    IPAddress dIpAddress = IPAddress.Parse(txtDestinationIP.Text);
+                    IPAddress sIpAddress = (IPAddress)cmbSourceIP.SelectedItem;
+                    if (rbIsSource.IsChecked == true)
+                    {
+                        demoTransporter.onSClientGetData += sTransporter_onGetData;
+                        messageLogCollection.Add("Client set as Source");
+                    }
+                    else
+                    {
+                        demoTransporter.onSClientGetData += dTransporter_onGetData;
+                        messageLogCollection.Add("Client set as Destination");
+                    }
+                    newConfig = new RConfig(true, sIpAddress, dIpAddress);
+                }
+                demoTransporter.SetConfig(newConfig);
+                messageLogCollection.Add("The configuration has been updated");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Wrong config setup! \n" + ex.Message);
+            }
+        }
+
+        private void btnSetSIP_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                IPAddress ip = (IPAddress)cmbSourceIP.SelectedItem;
+                demoTransporter.transporterConfig.dataSEndPoint.Address = ip;
+                demoTransporter.transporterConfig.messageSEndPoint.Address = ip;
             }
             catch (Exception ex)
             {
@@ -221,6 +241,36 @@ namespace Demonstration
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void btnNewClient_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow newClient = new MainWindow();
+            newClient.Show();
+        }
+    }
+
+    [ValueConversion(typeof(bool), typeof(Visibility))]
+    public class BooleanToVisibilityInvertedConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Visibility result;
+            if ((bool)value == true)
+                result = Visibility.Hidden;
+            else result = Visibility.Visible;
+
+            return result;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool result;
+            if ((Visibility)value == Visibility.Hidden)
+                result = true;
+            else result = false;
+
+            return result;
         }
     }
 }

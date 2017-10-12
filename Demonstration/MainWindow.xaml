@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:Demonstration"
         mc:Ignorable="d"
         Title="Transporter Demo" Height="392" Width="525" Closing="Window_Closing">
+    <Window.Resources>
+        <local:BooleanToVisibilityInvertedConverter x:Key="BooleanToVisibilityInvertedConverter"/>
+    </Window.Resources>
     <Grid x:Name="RootGrid" Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -17,21 +20,49 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,5" BorderThickness="0,0,0,2" BorderBrush="DimGray">
-            <Label Content="Demo" Margin="20,0,0,0" FontSize="24"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Content="Demo" Margin="20,0,0,0" FontSize="24"/>
+                <Button x:Name="btnNewClient" Grid.Column="1" Margin="0,5" Padding="5,2" Content="Create new client" Click="btnNewClient_Click"/>
+            </Grid>
+            
         </Border>
-        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-            <TextBox x:Name="txtDestinationIP" Width="120" Margin="5,5,0,5" Padding="2"/>
-            <Button x:Name="btnSetDIP" Content="Set destination IP" Width="100" Margin="5,5,0,5" Padding="2" Click="btnSetDIP_Click"/>
-        </StackPanel>
-        <StackPanel Grid.Row="2" Grid.Column="0">
-            <Button x:Name="btnRunMessageListenerS" Content="Run Message listener S" Margin="5" Padding="2" Click="btnRunMessageListenerS_Click"></Button>
-            <Button x:Name="btnRunMessageListenerD" Content="Run Message listener D" Margin="5" Padding="2" Click="btnRunMessageListenerD_Click"></Button>
-            <Button x:Name="btnStopMessageListenerS" Content="Stop Message listener S" Margin="5" Padding="2" Click="btnStopMessageListenerS_Click"/>
-            <Button x:Name="btnStopMessageListenerD" Content="Stop Message listener D" Margin="5" Padding="2" Click="btnStopMessageListenerD_Click"/>
-            <Button x:Name="btnSendOpenDataListenerD" Content="Send: OpenDataListener to S" Margin="5" Padding="2" Click="btnSendOpenDataListenerD_Click"></Button>
-            <Button x:Name="btnSendIsFreeD" Content="Send: IsFree to D" Margin="5" Padding="2" Click="btnSendIsFreeD_Click"></Button>
-            <Button x:Name="btnSendTestDataD" Content="Send: TestFileData to D" Margin="5" Padding="2" Click="btnSendTestDataD_Click"/>
-        </StackPanel>
+        <ScrollViewer Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Stretch" VerticalScrollBarVisibility="Auto" >
+            <StackPanel>
+                <Expander Header="Settings">
+                    <StackPanel>
+                        <GroupBox Header="Service type" Margin="5,5,5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="rbIsSource" Margin="5,5,5,0" Padding="2" VerticalContentAlignment="Center" Content="Source" IsThreeState="True" IsChecked="True"/>
+                                <RadioButton x:Name="rbIsDestination" Margin="5,5,5,0" Padding="2" VerticalContentAlignment="Center" Content="Destination" IsThreeState="True"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <CheckBox x:Name="chkIsLocalSet" Margin="5,5,5,0" Content="local client" IsChecked="True"/>
+                        <GroupBox Margin="5,5,5,0" Header="Connection settings" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityInvertedConverter}, ElementName=chkIsLocalSet}">
+                            <StackPanel>
+                                <Label Padding="2,2,2,0">Source ip</Label>
+                                <ComboBox x:Name="cmbSourceIP"  Margin="5,5,5,0" Padding="2" ItemsSource="{Binding sourceIPListCollection}"/>
+                                <Label Padding="2,2,2,0">Destination ip</Label>
+                                <TextBox x:Name="txtDestinationIP" Margin="5,5,5,0" Padding="2"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <Button x:Name="btnSetSIP" Content="Set config" Margin="5" Padding="5,2" Click="btnSetRconfig"/>
+                    </StackPanel>
+                </Expander>
+                <Expander Header="Manage services" IsExpanded="True">
+                    <StackPanel>
+                        <Button x:Name="btnRunMessageListenerS" Content="Run Message listener S" Margin="5" Padding="2" Click="btnRunMessageListenerS_Click"></Button>
+                        <Button x:Name="btnStopMessageListenerS" Content="Stop Message listener S" Margin="5" Padding="2" Click="btnStopMessageListenerS_Click"/>
+                        <Button x:Name="btnSendTestDataD" Content="Send: TestFileData to D" Margin="5" Padding="2" Click="btnSendTestDataD_Click"/>
+                    </StackPanel>
+                </Expander>
+
+            </StackPanel>
+
+        </ScrollViewer>
         <Border Grid.Row="2" Grid.Column="1" BorderThickness="2" BorderBrush="DimGray">
             <ListBox ItemsSource="{Binding messageLogCollection}"/>
         </Border>
