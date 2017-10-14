@@ -5,8 +5,66 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Demonstration"
         mc:Ignorable="d"
-        Title="Transporter Demo" Height="350" Width="525">
-    <Grid>
-        
+        Title="Transporter Demo" Height="392" Width="525" Closing="Window_Closing">
+    <Window.Resources>
+        <local:BooleanToVisibilityInvertedConverter x:Key="BooleanToVisibilityInvertedConverter"/>
+    </Window.Resources>
+    <Grid x:Name="RootGrid" Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,5" BorderThickness="0,0,0,2" BorderBrush="DimGray">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Content="Demo" Margin="20,0,0,0" FontSize="24"/>
+                <Button x:Name="btnNewClient" Grid.Column="1" Margin="0,5" Padding="5,2" Content="Create new client" Click="btnNewClient_Click"/>
+            </Grid>
+            
+        </Border>
+        <ScrollViewer Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Stretch" VerticalScrollBarVisibility="Auto" >
+            <StackPanel>
+                <Expander Header="Settings">
+                    <StackPanel>
+                        <GroupBox Header="Service type" Margin="5,5,5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="rbIsSource" Margin="5,5,5,0" Padding="2" VerticalContentAlignment="Center" Content="Source" IsThreeState="True" IsChecked="True"/>
+                                <RadioButton x:Name="rbIsDestination" Margin="5,5,5,0" Padding="2" VerticalContentAlignment="Center" Content="Destination" IsThreeState="True"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <CheckBox x:Name="chkIsLocalSet" Margin="5,5,5,0" Content="local client" IsChecked="True"/>
+                        <GroupBox Margin="5,5,5,0" Header="Connection settings" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityInvertedConverter}, ElementName=chkIsLocalSet}">
+                            <StackPanel>
+                                <Label Padding="2,2,2,0">Source ip</Label>
+                                <ComboBox x:Name="cmbSourceIP"  Margin="5,5,5,0" Padding="2" ItemsSource="{Binding sourceIPListCollection}"/>
+                                <Label Padding="2,2,2,0">Destination ip</Label>
+                                <TextBox x:Name="txtDestinationIP" Margin="5,5,5,0" Padding="2"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <Button x:Name="btnSetSIP" Content="Set config" Margin="5" Padding="5,2" Click="btnSetRconfig"/>
+                    </StackPanel>
+                </Expander>
+                <Expander Header="Manage services" IsExpanded="True">
+                    <StackPanel>
+                        <Button x:Name="btnRunMessageListenerS" Content="Run Message listener S" Margin="5" Padding="2" Click="btnRunMessageListenerS_Click"></Button>
+                        <Button x:Name="btnStopMessageListenerS" Content="Stop Message listener S" Margin="5" Padding="2" Click="btnStopMessageListenerS_Click"/>
+                        <Button x:Name="btnSendTestDataD" Content="Send: TestFileData to D" Margin="5" Padding="2" Click="btnSendTestDataD_Click"/>
+                    </StackPanel>
+                </Expander>
+
+            </StackPanel>
+
+        </ScrollViewer>
+        <Border Grid.Row="2" Grid.Column="1" BorderThickness="2" BorderBrush="DimGray">
+            <ListBox ItemsSource="{Binding messageLogCollection}"/>
+        </Border>
     </Grid>
 </Window>
