@@ -37,17 +37,17 @@ namespace Transporter
             SetEvents();
         }
 
-        public Transporter(bool isMaster, string sourceClientIP, string destinationClientIP)
+        public Transporter(string sourceClientIP, string destinationClientIP)
         {
-            transporterConfig = new RConfig(isMaster, sourceClientIP, destinationClientIP);
+            transporterConfig = new RConfig(sourceClientIP, destinationClientIP);
             transporterClient = new Client(transporterConfig);
 
             SetEvents();
         }
 
-        public Transporter(bool isMaster, IPAddress sourceClientIP, IPAddress destinationClientIP)
+        public Transporter(IPAddress sourceClientIP, IPAddress destinationClientIP)
         {
-            transporterConfig = new RConfig(isMaster, sourceClientIP, destinationClientIP);
+            transporterConfig = new RConfig(sourceClientIP, destinationClientIP);
             transporterClient = new Client(transporterConfig);
 
             SetEvents();

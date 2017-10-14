@@ -213,7 +213,7 @@ namespace Demonstration
                         demoTransporter.onSClientGetData += dTransporter_onGetData;
                         messageLogCollection.Add("Client set as Destination");
                     }
-                    newConfig = new RConfig(true, sIpAddress, dIpAddress);
+                    newConfig = new RConfig(sIpAddress, dIpAddress);
                 }
                 demoTransporter.SetConfig(newConfig);
                 messageLogCollection.Add("The configuration has been updated");
