@@ -137,6 +137,7 @@ namespace Transporter
                     transporterClient.onGetDataListenerCreated -= SendObject_onDataListenerCreated;
                     transporterClient.onGetDataListenerCreated -= transporterClient_onGetDataListenerCreated;
                     transporterIsFree = true;
+                    this.sendObjectIsFree = true;
                 }
             });
             sendTask.Start();
