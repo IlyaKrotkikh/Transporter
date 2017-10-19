@@ -11,14 +11,15 @@ namespace Transporter
 {
     public class Transporter
     {
-        private List<byte[]> listDataBlocks;
-        private bool transporterIsFree;
-        private bool sendObjectIsFree;
-        private CancellationTokenSource ctsWaitWork;
+        private List<byte[]> listDataBlocks; // Список блоков отсылаемого объекта
+        private bool transporterIsFree; // Блок на создание новой задачи
+        private bool sendObjectIsFree; // Блокировка коллекции передаваемых данных
+        private CancellationTokenSource ctsWaitWork; // Токен остановки задачи на прекращение ожидания ответа от клиента
 
-        public Client transporterClient { get; private set; }
-        public RConfig transporterConfig { get; private set; }
+        public Client transporterClient { get; private set; } // Клиент
+        public RConfig transporterConfig { get; private set; } // Конфиг клиента
 
+        // Проброс событий из клиента
         public event DataEventHandler onSClientGetData = delegate { };
         public event EventHandler onSClientDataListenerCreated = delegate { };
         public event EventHandler onSClientMessageListenerCreated = delegate { };
@@ -28,15 +29,23 @@ namespace Transporter
         public event EventHandler onDClientCancel = delegate { };
         public event EventHandler<Exception> onSClientError = delegate { };
 
-
-        public Transporter(bool isMaster)
+        /// <summary>
+        /// Конструктор для локальной работы.
+        /// </summary>
+        /// <param name="isSource">true - отправитель; false - получатель</param>
+        public Transporter(bool isSource)
         {
-            transporterConfig = new RConfig(isMaster);
-            transporterClient = new Client(transporterConfig);
+            transporterConfig = new RConfig(isSource); // Инициализируем конфиг как локальный
+            transporterClient = new Client(transporterConfig); // Инициализируем клиент с конфигурацией
 
             SetEvents();
         }
 
+        /// <summary>
+        /// Конструктор для работы в локальной сети.
+        /// </summary>
+        /// <param name="sourceClientIP">IP адрес отправителя в локальной сети</param>
+        /// <param name="destinationClientIP">IP адрес получателя в локальной сети</param>
         public Transporter(string sourceClientIP, string destinationClientIP)
         {
             transporterConfig = new RConfig(sourceClientIP, destinationClientIP);
@@ -45,6 +54,11 @@ namespace Transporter
             SetEvents();
         }
 
+        /// <summary>
+        /// Конструктор для работы в локальной сети.
+        /// </summary>
+        /// <param name="sourceClientIP">IP адрес отправителя в локальной сети</param>
+        /// <param name="destinationClientIP">IP адрес получателя в локальной сети</param>
         public Transporter(IPAddress sourceClientIP, IPAddress destinationClientIP)
         {
             transporterConfig = new RConfig(sourceClientIP, destinationClientIP);
@@ -53,6 +67,9 @@ namespace Transporter
             SetEvents();
         }
 
+        /// <summary>
+        /// Подписывается на события клиента.
+        /// </summary>
         private void SetEvents()
         {
             transporterClient.onCancel += transporterClient_onCancel;
@@ -65,12 +82,19 @@ namespace Transporter
             transporterClient.onMessageListenerClosed += transporterClient_onMessageListenerClosed;
         }
 
+        /// <summary>
+        /// Горячая замена конфигурации.
+        /// </summary>
+        /// <param name="config">Новый конфиг</param>
         public void SetConfig(RConfig config)
         {
             this.transporterConfig = config;
             transporterClient.config = config;
         }
 
+        /// <summary>
+        /// Запускает работу сервиса.
+        /// </summary>
         public void StartService()
         {
             transporterClient.StartListeningMesages();
@@ -78,12 +102,19 @@ namespace Transporter
             sendObjectIsFree = true;
         }
 
+        /// <summary>
+        /// Останавливает работу сервиса.
+        /// </summary>
         public void StopService()
         {
             transporterIsFree = false;
             transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.CloseMessageListener }, transporterConfig.messageSEndPoint);
         }
 
+        /// <summary>
+        /// Отправить объект на удаленный клиент.
+        /// </summary>
+        /// <param name="obj"></param>
         public void SendObject(object obj)
         {
             Metadata objectMetadata = new Metadata();
@@ -112,6 +143,12 @@ namespace Transporter
             }
         }
 
+        /// <summary>
+        /// Когда получает ответ о готовности принимать данные от удаленного клиента,
+        /// отправляет их.
+        /// </summary>
+        /// <param name="sender">Ссылка на объект отправитель события</param>
+        /// <param name="e">Аргументы события</param>
         private void SendObject_onDataListenerCreated(object sender, EventArgs e)
         {
             if (ctsWaitWork != null)
@@ -143,6 +180,12 @@ namespace Transporter
             sendTask.Start();
         }
 
+        /// <summary>
+        /// ЗЗапускает задачу ожидания ответа от удаленного клиента,
+        /// если ответ получен, задача прекращается, в противном случае
+        /// операция по передаче отменяется.
+        /// </summary>
+        /// <param name="seconds"> Время ожидания в секундах</param>
         private void WaitAnswer(int seconds)
         {
             ctsWaitWork = new CancellationTokenSource();
@@ -202,6 +245,12 @@ namespace Transporter
             this.onSClientError(sender, e);
         }
 
+        /// <summary>
+        /// Делит массив байт с данными объект на блоки данных.
+        /// </summary>
+        /// <param name="metadata">Метадата для отправки на удаленный клиент</param>
+        /// <param name="data">Данные</param>
+        /// <returns></returns>
         public List<byte[]> DevideByteMass(ref Metadata metadata, byte[] data)
         {
             List<byte[]> listBlocks = new List<byte[]>();
