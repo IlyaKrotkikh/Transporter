@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Transporter.Service
 {
+    /// <summary>
+    /// Конфигурация клиента.
+    /// </summary>
     public class RConfig
     {
         public IPEndPoint messageSEndPoint { get; set; } // Source message end point
@@ -15,8 +18,15 @@ namespace Transporter.Service
         public IPEndPoint dataSEndPoint { get; set; }    // Source data end point
         public IPEndPoint dataDEndPoint { get; set; }    // Destination data end point
 
+        /// <summary>
+        /// Конструктор на локальную работу.
+        /// </summary>
+        /// <param name="isSource">true - отправитель; false - получатель</param>
         public RConfig(bool isSource)
         {
+            // Для локальной работы двух клиентов 
+            // требуется резервация дополнительных портов. 
+
             int messageSPort;   // Source message port
             int messageDPort;   // Destination message port
             int dataSPort;      // Source data port
@@ -48,6 +58,11 @@ namespace Transporter.Service
 
         }
 
+        /// <summary>
+        /// Конфигурация для работы по локальной сети
+        /// </summary>
+        /// <param name="sourceIP">IP адрес отправителя</param>
+        /// <param name="destinationIP">IP адрес получателя</param>
         public RConfig(string sourceIP , string destinationIP)
         {
             int messagePort = 8080;

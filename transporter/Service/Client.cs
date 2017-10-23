@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Transporter.Service
 {
-    public delegate void DataEventHandler(object data);
+    public delegate void DataEventHandler(object data); // Делегат для события на получение данных.
 
     public class Client
     {
@@ -21,20 +21,22 @@ namespace Transporter.Service
         public event EventHandler onDataListenerCreated = delegate { };
         public event EventHandler onMessageListenerClosed = delegate { };
         public event EventHandler onDataListenerClosed = delegate { };
-
-
         public event EventHandler onCancel = delegate { };
 
-        public RConfig config { get; set; }
+        public RConfig config { get; set; } // Текущий конфиг.
 
-        private Task MessageListener { get; set; }
-        private Task DataListener { get; set; }
+        private Task MessageListener { get; set; } // Задача просушки сообщений от удаленного клиента.
+        private Task DataListener { get; set; } // Задача на получение данных от удаленного клиента.
 
-        private Metadata tempMetadata { get; set; }
-        private bool isDataListenerFree;
-        private bool isMessageListenerFree;
-        private bool messageListenerRunStatus;
+        private Metadata tempMetadata { get; set; } // Временные метаданные о принимаемых данных. 
+        private bool isDataListenerFree; // Блокировка операций с слушателем данных когда он работает.
+        private bool isMessageListenerFree; // Блокировка операций с слушателем сообщений когда он работает.
+        private bool messageListenerRunStatus; // Требуется для остановки слушателя сообщений.
 
+        /// <summary>
+        /// Конструктор клиента.
+        /// </summary>
+        /// <param name="config">Конфигурация клиента</param>
         public Client(RConfig config)
         {
             this.config = config;
@@ -42,6 +44,11 @@ namespace Transporter.Service
             isMessageListenerFree = true;
         }
 
+        /// <summary>
+        /// Управление реакцией на сообщение.
+        /// </summary>
+        /// <param name="message">Сообщение</param>
+        /// <returns></returns>
         private bool MessageHandler(Message message)
         {
             bool status = false;
@@ -79,6 +86,10 @@ namespace Transporter.Service
             return status;
         }
 
+        /// <summary>
+        /// Подготовка слушателя данных к работе.
+        /// </summary>
+        /// <param name="metadata">Метаданные о получаемых данных</param>
         private void PrepareDataListener(Metadata metadata)
         {
             if (isDataListenerFree)
@@ -94,6 +105,11 @@ namespace Transporter.Service
             }
         }
 
+        /// <summary>
+        /// Отправляет сообщение на указанный адрес.
+        /// </summary>
+        /// <param name="message">Сообщение для отправки</param>
+        /// <param name="ipEndPoint">Удаленный IP адрес</param>
         public void SendMessage(Message message, IPEndPoint ipEndPoint)
         {
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -113,11 +129,19 @@ namespace Transporter.Service
             }
         }
 
+        /// <summary>
+        /// Отправляет сообщение на удаленный адрес из конфига.
+        /// </summary>
+        /// <param name="message">Сообщение для отправки</param>
         public void SendMessage(Message message)
         {
             this.SendMessage(message, config.messageDEndPoint);
         }
 
+        /// <summary>
+        /// Отправляет массив байт на удаленный клиент.
+        /// </summary>
+        /// <param name="data">Массив байт данных</param>
         public void SendData(byte[] data)
         {
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -135,15 +159,20 @@ namespace Transporter.Service
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
             }
-
         }
 
+        /// <summary>
+        /// Стартует задачу слушателя данных.
+        /// </summary>
         public void StartListeningData()
         {
             DataListener = new Task(ListenData);
             DataListener.Start();
         }
 
+        /// <summary>
+        /// Стартует задачу слушателя сообщений.
+        /// </summary>
         public void StartListeningMesages()
         {
             try
@@ -163,11 +192,17 @@ namespace Transporter.Service
             }
         }
 
+        /// <summary>
+        /// Переводит статус слушателя сообщений в выключение.
+        /// </summary>
         private void StopListeningMesages()
         {
             messageListenerRunStatus = false;
         }
 
+        /// <summary>
+        /// Логика прослушки сообщений.
+        /// </summary>
         private void ListenMesage()
         {
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -210,14 +245,17 @@ namespace Transporter.Service
             }
         }
 
+        /// <summary>
+        /// Логика прослушки и получения данных.
+        /// </summary>
         private void ListenData()
         {
-            // Для передачи данных не объязательно использовать один и тот же сокет, что принимает данные.
-            // Так как метод выполняется в другом потоке, в теории, может возникнуть ситтуация, 
-            // когда указатель на сокет будет указывать на сокет из последнего зарегистрированного таска.
+            // Для передачи данных не обязательно использовать один и тот же сокет, что принимает данные.
+            // Так как метод выполняется в другом потоке, в теории, может возникнуть ситуация, 
+            // когда указатель на сокет будет указывать на сокет из последнего зарегистрированного задания.
             // Так же стоит блокировать новые задачи, до тех пор, пока не отработает текущий сокет, 
-            // иначе ноый сокет выдаст исключении о занятом порте.
-            // Поэтому целесообразнее инициализировать и закрывать сокеты не выхходя за пределы данного метода,
+            // иначе новый сокет выдаст исключении о занятом порте.
+            // Поэтому целесообразнее инициализировать и закрывать сокеты не выходя за пределы данного метода,
             // а так же, снимать блок, когда сокет будет закрыт. 
 
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -228,7 +266,6 @@ namespace Transporter.Service
 
             try
             {
-                
                 socket.Bind(config.dataSEndPoint);
                 SendMessage(new Message() { messageCommands = MessageCommands.DataListenerCreated });
                 onDataListenerCreated(this,null);
@@ -264,6 +301,11 @@ namespace Transporter.Service
             }
         }
 
+        /// <summary>
+        /// Сериализует объект в массив байт.
+        /// </summary>
+        /// <param name="obj"> объект для сериализации</param>
+        /// <returns></returns>
         public byte[] ObjectToByteArray(Object obj)
         {
             if (obj == null)
