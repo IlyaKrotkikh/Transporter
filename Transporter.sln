@@ -15,8 +15,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimpleCalc", "SimpleCalc", "{B0D782B2-F94E-4755-B392-A90FB1A7A16E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCalcSource", "SimpleCalcSource\SimpleCalcSource.csproj", "{CB38F05F-9A5C-4D4F-8324-4E2A60125246}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B33FF69-4F3C-4F93-9216-1D9D8BEEB8D2} = {9B33FF69-4F3C-4F93-9216-1D9D8BEEB8D2}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCalcDestination", "SimpleCalcDestination\SimpleCalcDestination.csproj", "{01732F0B-F4B3-4FEE-9EA9-C22A576D622C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9B33FF69-4F3C-4F93-9216-1D9D8BEEB8D2} = {9B33FF69-4F3C-4F93-9216-1D9D8BEEB8D2}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
