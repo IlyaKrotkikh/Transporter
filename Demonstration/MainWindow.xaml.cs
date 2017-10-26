@@ -1,26 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using TransporterLib.Service;
-using TransporterLib;
-using Microsoft.Win32;
+using System.Globalization;
 using System.IO;
 using System.Net;
-using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Data;
+using TransporterLib.Service;
 
 namespace Demonstration
 {
@@ -55,6 +43,11 @@ namespace Demonstration
             demoTransporter.onSClientMessageListenerCreated += Transporter_onSClientMessageListenerCreated;
         }
 
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             demoTransporter.onDClientCancel -= Transporter_onCancel;
@@ -66,6 +59,60 @@ namespace Demonstration
             demoTransporter.onSClientMessageListenerCreated -= Transporter_onSClientMessageListenerCreated;
         }
 
+        private void btnNewClient_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow newClient = new MainWindow();
+            newClient.Show();
+        }
+
+        private void btnSetRconfig(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                RConfig newConfig;
+                demoTransporter.onSClientGetData -= dTransporter_onGetData;
+                demoTransporter.onSClientGetData -= sTransporter_onGetData;
+
+                if (chkIsLocalSet.IsChecked == true)
+                {
+                    if (rbIsSource.IsChecked == true)
+                    {
+                        demoTransporter.onSClientGetData += sTransporter_onGetData;
+                        messageLogCollection.Add("Client set as Source");
+                        newConfig = new RConfig(true);
+                    }
+                    else
+                    {
+                        demoTransporter.onSClientGetData += dTransporter_onGetData;
+                        messageLogCollection.Add("Client set as Destination");
+                        newConfig = new RConfig(false);
+                    }
+                }
+                else
+                {
+                    IPAddress dIpAddress = IPAddress.Parse(txtDestinationIP.Text);
+                    IPAddress sIpAddress = (IPAddress)cmbSourceIP.SelectedItem;
+                    if (rbIsSource.IsChecked == true)
+                    {
+                        demoTransporter.onSClientGetData += sTransporter_onGetData;
+                        messageLogCollection.Add("Client set as Source");
+                    }
+                    else
+                    {
+                        demoTransporter.onSClientGetData += dTransporter_onGetData;
+                        messageLogCollection.Add("Client set as Destination");
+                    }
+                    newConfig = new RConfig(sIpAddress, dIpAddress);
+                }
+                demoTransporter.SetConfig(newConfig);
+                messageLogCollection.Add("The configuration has been updated");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Wrong config setup! \n" + ex.Message);
+            }
+        }
+
         private void btnRunMessageListenerS_Click(object sender, RoutedEventArgs e)
         {
             demoTransporter.StartService();
@@ -74,16 +121,6 @@ namespace Demonstration
         private void btnStopMessageListenerS_Click(object sender, RoutedEventArgs e)
         {
             demoTransporter.StopService();
-        }
-
-        private void btnSendOpenDataListenerD_Click(object sender, RoutedEventArgs e)
-        {
-            demoTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.OpenDataListener, metadata = new Metadata() });
-        }
-
-        private void btnSendIsFreeD_Click(object sender, RoutedEventArgs e)
-        {
-            demoTransporter.transporterClient.SendMessage(new Message() { messageCommands = MessageCommands.IsFree });
         }
 
         private void btnSendTestDataD_Click(object sender, RoutedEventArgs e)
@@ -172,81 +209,8 @@ namespace Demonstration
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                messageLogCollection.Add(sender.ToString() + e.Message);
+                messageLogCollection.Add(sender.ToString()+ ": " + e.Message);
             }));
-        }
-
-        private void btnSetRconfig(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                RConfig newConfig;
-                demoTransporter.onSClientGetData -= dTransporter_onGetData;
-                demoTransporter.onSClientGetData -= sTransporter_onGetData;
-
-                if (chkIsLocalSet.IsChecked == true)
-                {
-                    if (rbIsSource.IsChecked == true)
-                    {
-                        demoTransporter.onSClientGetData += sTransporter_onGetData;
-                        messageLogCollection.Add("Client set as Source");
-                        newConfig = new RConfig(true);
-                    }
-                    else
-                    {
-                        demoTransporter.onSClientGetData += dTransporter_onGetData;
-                        messageLogCollection.Add("Client set as Destination");
-                        newConfig = new RConfig(false);
-                    }
-                }
-                else
-                {
-                    IPAddress dIpAddress = IPAddress.Parse(txtDestinationIP.Text);
-                    IPAddress sIpAddress = (IPAddress)cmbSourceIP.SelectedItem;
-                    if (rbIsSource.IsChecked == true)
-                    {
-                        demoTransporter.onSClientGetData += sTransporter_onGetData;
-                        messageLogCollection.Add("Client set as Source");
-                    }
-                    else
-                    {
-                        demoTransporter.onSClientGetData += dTransporter_onGetData;
-                        messageLogCollection.Add("Client set as Destination");
-                    }
-                    newConfig = new RConfig(sIpAddress, dIpAddress);
-                }
-                demoTransporter.SetConfig(newConfig);
-                messageLogCollection.Add("The configuration has been updated");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Wrong config setup! \n" + ex.Message);
-            }
-        }
-
-        private void btnSetSIP_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                IPAddress ip = (IPAddress)cmbSourceIP.SelectedItem;
-                demoTransporter.transporterConfig.dataSEndPoint.Address = ip;
-                demoTransporter.transporterConfig.messageSEndPoint.Address = ip;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Wrong ip address! \n" + ex.Message);
-            }
-        }
-
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private void btnNewClient_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow newClient = new MainWindow();
-            newClient.Show();
         }
     }
 
