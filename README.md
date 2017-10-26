@@ -272,6 +272,9 @@ SomeClass
  - **[wikipedia_UDP]** - User Datagram Protocol.
  - **[stackoverflow_GetLocIP]** - Get local IP address.
 
+##### Автор
+ivashca99@gmail.com
+
 [//]: # (Список ссылок)
 
 [Demonstration]: <https://github.com/IlyaKrotkikh/Transporter/tree/master/Demonstration>
