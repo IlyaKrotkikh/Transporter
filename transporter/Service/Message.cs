@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Transporter.Service
+namespace TransporterLib.Service
 {
     /// <summary>
     /// Сообщение с командой и метаданными.

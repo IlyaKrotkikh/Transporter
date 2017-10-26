@@ -7,7 +7,7 @@
     <ProjectGuid>{9B33FF69-4F3C-4F93-9216-1D9D8BEEB8D2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Transporter</RootNamespace>
+    <RootNamespace>TransporterLib</RootNamespace>
     <AssemblyName>Transporter</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

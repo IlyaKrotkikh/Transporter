@@ -15,8 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Transporter.Service;
-using Transporter;
+using TransporterLib.Service;
+using TransporterLib;
 using Microsoft.Win32;
 using System.IO;
 using System.Net;
@@ -29,7 +29,7 @@ namespace Demonstration
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private Transporter.Transporter demoTransporter;
+        private TransporterLib.Transporter demoTransporter;
         public ObservableCollection<string> messageLogCollection { get; set; }
         public ObservableCollection<IPAddress> sourceIPListCollection { get; set; }
         private byte[] testData;
@@ -38,7 +38,7 @@ namespace Demonstration
 
         public MainWindow()
         {
-            demoTransporter = new Transporter.Transporter(true);
+            demoTransporter = new TransporterLib.Transporter(true);
             messageLogCollection = new ObservableCollection<string>();
             IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
             sourceIPListCollection = new ObservableCollection<IPAddress>(host.AddressList);

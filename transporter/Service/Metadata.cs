@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Transporter.Service
+namespace TransporterLib.Service
 {
     /// <summary>
     /// Метаданные о передаваемом объекте.

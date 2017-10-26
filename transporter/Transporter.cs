@@ -5,9 +5,9 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Transporter.Service;
+using TransporterLib.Service;
 
-namespace Transporter
+namespace TransporterLib
 {
     public class Transporter
     {

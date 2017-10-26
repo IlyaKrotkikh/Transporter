@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 /// <summary>
 /// Команды для удаленного клиента.
 /// </summary>
-namespace Transporter.Service
+namespace TransporterLib.Service
 {
     public enum MessageCommands
     {
