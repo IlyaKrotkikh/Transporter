@@ -68,19 +68,6 @@ namespace TransporterLib
         }
 
         /// <summary>
-        /// Конструктор для готовой конфигурации.
-        /// </summary>
-        /// <param name="sourceClientIP">IP адрес отправителя в локальной сети</param>
-        /// <param name="destinationClientIP">IP адрес получателя в локальной сети</param>
-        public Transporter(RConfig config)
-        {
-            transporterConfig = config;
-            transporterClient = new Client(transporterConfig);
-
-            SetEvents();
-        }
-
-        /// <summary>
         /// Подписывается на события клиента.
         /// </summary>
         private void SetEvents()
