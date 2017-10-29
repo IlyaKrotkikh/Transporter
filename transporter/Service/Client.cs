@@ -8,7 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Transporter.Service
+namespace TransporterLib.Service
 {
     public delegate void DataEventHandler(object data); // Делегат для события на получение данных.
 
