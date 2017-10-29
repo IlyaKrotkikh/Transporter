@@ -161,7 +161,7 @@ namespace SimpleCalcSource
         /// <summary>
         /// Обработчик события на возникновение ошибки в клиенте.
         /// </summary>
-        /// <param name="sender">Объект отправитель.</param>
+        /// <param name="sender">Объект-генератор  события.</param>
         /// <param name="ex">Ошибка.</param>
         private static void demoTransporter_onClientError(object sender, Exception ex)
         {
@@ -171,7 +171,7 @@ namespace SimpleCalcSource
         /// <summary>
         /// Обработчик события на сообщение Cancel от удаленного клиента.
         /// </summary>
-        /// <param name="sender">Объект отправитель.</param>
+        /// <param name="sender">Объект-генератор события.</param>
         /// <param name="e">объект EventArgs</param>
         private static void demoTransporter_onDClientCancel(object sender, EventArgs e)
         {
